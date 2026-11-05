@@ -1,0 +1,33 @@
+name: Publicar AgendaSaúde Lab
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verificar simulador e dados municipais
+        run: node --test model.test.cjs dados-municipais.test.cjs
+      - uses: actions/configure-pages@v5
+      - name: Preparar arquivos públicos
+        run: |
+          mkdir _site
+          cp index.html style.css brand.svg calendar.svg app.js model.js dados-municipais.js voltar-no-tempo.js previsoes.js exemplo-prefeitura-ficticia.csv historico-semanal-ficticio.csv _site/
+          cp -r fonts _site/
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

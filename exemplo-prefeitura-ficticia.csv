@@ -1,0 +1,9 @@
+inicio;fim;servico;ofertadas;faltas_sem_aviso;cancelamentos;reocupadas
+2026-09-01;2026-09-30;Cardiologia;260;35;25;12
+2026-09-01;2026-09-30;Oftalmologia;210;29;18;7
+2026-09-01;2026-09-30;Ultrassonografia;220;32;21;9
+2026-09-01;2026-09-30;Radiografia;172;17;11;5
+2026-10-01;2026-10-31;Cardiologia;272;31;28;16
+2026-10-01;2026-10-31;Oftalmologia;224;24;19;9
+2026-10-01;2026-10-31;Ultrassonografia;230;29;24;13
+2026-10-01;2026-10-31;Radiografia;181;16;14;8

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#453886">
+<title>AgendaSaúde Lab · Simulador municipal</title>
+<link rel="icon" href="brand.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css?v=9">
+<script defer src="model.js?v=2"></script><script defer src="dados-municipais.js?v=4"></script><script defer src="app.js?v=5"></script>
+<script defer src="previsoes.js?v=2"></script><script defer src="voltar-no-tempo.js?v=6"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute"><defs><symbol id="i-message" viewBox="0 0 24 24"><path d='M21 12a7 7 0 0 1-7 7H8l-5 3v-6a7 7 0 0 1-1-4V9a6 6 0 0 1 6-6h7a6 6 0 0 1 6 6z'/><path d='M7 9h9M7 13h5'/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d='M6 3h3l1.6 4.6-2.1 1.7a16 16 0 0 0 6.3 6.3l1.8-2.2 4.4 1.7v3.1a2 2 0 0 1-2.3 2C10.4 19.1 4.8 13.6 3.6 5.3A2 2 0 0 1 6 3z'/></symbol>
+<symbol id="i-queue" viewBox="0 0 24 24"><circle cx='9' cy='8' r='3'/><path d='M3 20v-2a6 6 0 0 1 12 0v2M16 6a3 3 0 0 1 0 6m1 3a5 5 0 0 1 4 5'/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d='M3 6h8m5 0h5M3 12h2m5 0h11M3 18h10m5 0h3'/><circle cx='13' cy='6' r='2'/><circle cx='7' cy='12' r='2'/><circle cx='15' cy='18' r='2'/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d='M4 12h15m-6-6 6 6-6 6'/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x='3' y='5' width='18' height='16' rx='3'/><path d='M7 3v4m10-4v4M3 10h18m-14 5h3'/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/></symbol>
+<symbol id="i-gain" viewBox="0 0 24 24"><path d='m3 16 6-6 4 4 8-9m-6 0h6v6'/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d='M4 20h17M7 16V9m5 7V4m5 12v-5'/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx='12' cy='12' r='9'/><path d='M12 11v5m0-9v.2'/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d='M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4'/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d='m2 8 10-5 10 5-10 5zM2 12l10 5 10-5M2 16l10 5 10-5'/></symbol></defs></svg>
+<a class="skip" href="#simulador">Ir ao simulador</a>
+<header><div class="shell head"><a class="brand" href="#topo" aria-label="AgendaSaúde Lab, início"><img src="brand.svg" width="34" height="34" alt="">Agenda<strong>Saúde</strong><span>Lab</span></a>
+<nav aria-label="Principal"><a href="#simulador">Simulador</a><a href="#municipio">Dados municipais</a><button type="button" data-method><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg> Como funciona</button></nav>
+<span class="demo"><i></i> Demonstração</span></div></header>
+<main class="shell" id="topo">
+<section class="hero"><div class="hero-text"><div class="eyebrow light"><span class="line"></span> Laboratório de saúde municipal</div>
+<h1>Uma semana,<br><em>duas agendas.</em></h1>
+<p>Compare estratégias para reduzir faltas e aproveitar vagas em consultas e exames.</p>
+<div class="hero-meta"><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg> 200 horários <i></i> 5 dias <i></i> 4 serviços</div><a class="forecast-jump" href="#previsao">Experimentar previsão de faltas →</a></div>
+<img class="hero-art" src="calendar.svg" alt=""></section>
+<section id="simulador" aria-labelledby="title"><div class="section-head"><div><h2 id="title">Simulador de agenda</h2><p>Escolha as ações da equipe e veja quantas vagas a mais seriam aproveitadas na mesma semana.</p></div><span class="synthetic">Dados fictícios</span></div>
+<div class="metrics" id="metrics"></div>
+<div class="workspace">
+<form class="controls panel" id="controls"><div class="panel-top"><span class="iconbox" aria-hidden="true"><svg class="ico" aria-hidden="true"><use href="#i-sliders"/></svg></span><h3>Estratégia da equipe</h3></div>
+<label class="field-label" for="scenario">Cenário do município</label><select id="scenario" aria-describedby="scenario-hint"><option value="regular">Semana típica</option><option value="transit">Transporte limitado</option><option value="digital">Menor alcance digital</option></select>
+<p class="hint" id="scenario-hint"></p>
+<fieldset><legend>Ações da equipe</legend>
+<label class="action"><span class="action-icon"><svg class="ico" aria-hidden="true"><use href="#i-message"/></svg></span><span class="action-copy"><b>Lembrete digital</b><small id="sms-help">Uma mensagem automática permite confirmar ou cancelar o horário.</small><em id="sms-cost">0 min da equipe</em></span><input type="checkbox" aria-describedby="sms-help sms-cost" id="sms" aria-label="Lembrete digital" checked><span class="toggle" aria-hidden="true"></span></label>
+<label class="action"><span class="action-icon"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg></span><span class="action-copy"><b>Confirmação por telefone</b><small id="phone-help">A equipe liga para quem ficou sem resposta ao lembrete.</small><em id="phone-cost">5 min por tentativa</em></span><input type="checkbox" aria-describedby="phone-help phone-cost" id="phone" aria-label="Confirmação por telefone"><span class="toggle" aria-hidden="true"></span></label>
+<label class="action"><span class="action-icon"><svg class="ico" aria-hidden="true"><use href="#i-queue"/></svg></span><span class="action-copy"><b>Acionar lista de espera</b><small id="queue-help">Após um cancelamento, a equipe oferece a vaga à próxima pessoa.</small><em id="queue-cost">3 min por oferta</em></span><input type="checkbox" aria-describedby="queue-help queue-cost" id="queue" aria-label="Acionar lista de espera" checked><span class="toggle" aria-hidden="true"></span></label></fieldset>
+<div class="budget"><label for="budget">Tempo de equipe por dia</label><output id="budget-label" for="budget">45 min</output></div><input type="range" id="budget" min="0" max="120" step="5" value="45"><div class="ends"><span>0 min</span><span>120 min</span></div>
+<button class="primary" type="submit">Simular estratégia <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button><small id="dirty" aria-live="polite"></small>
+</form>
+<div class="results">
+<section class="panel graph"><div class="panel-top between"><div><div class="eyebrow">Comparação semanal</div><h3>Atendimentos por dia</h3></div><span class="week-icon" aria-hidden="true"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></span></div>
+<div class="legend"><span><i class="base"></i>Sem ações da equipe</span><span><i class="plan"></i>Com estratégia</span></div>
+<div id="chart"></div>
+<div class="graph-foot" id="graph-foot"></div><button class="compare-link" type="button" id="compare"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg> Comparar as 8 estratégias <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></section>
+<aside class="contact-note"><span class="note-mark"><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg></span><div><h3>Quando a vaga pode ir para a fila?</h3><p>O horário continua reservado enquanto a pessoa não responde. Só um cancelamento explícito permite oferecê-lo a outra pessoa.</p></div></aside>
+</div>
+</div></section>
+<section class="panel explore municipality" id="municipio" aria-labelledby="city-title">
+  <div class="section-head"><div><div class="eyebrow">Histórico municipal</div><h2 id="city-title">Compare com a sua prefeitura</h2>
+  <p>Use um CSV (arquivo de planilha) com os totais de cada serviço por período. Os dados ficam neste navegador.</p></div>
+  <a class="ghost" href="exemplo-prefeitura-ficticia.csv" download>↓ Baixar CSV de exemplo</a></div>
+  <label class="field-label" for="city-file">Importar CSV agregado</label><input type="file" id="city-file" accept=".csv,text/csv">
+  <details><summary>Formato do arquivo e cálculo das taxas</summary>
+  <p>Use CSV em UTF-8, separado por ponto e vírgula ou vírgula, com as colunas do exemplo. Informe datas inicial e final inclusivas (AAAA-MM-DD), serviço e contagens de horários. Use somente dados agregados.</p>
+  <p><b>Ofertadas</b> são as vagas agendadas. Uma <b>falta sem aviso</b> acontece quando a pessoa não comparece. No <b>cancelamento</b>, ela avisa antes e libera o horário. <b>Reocupadas</b> são vagas canceladas em que outra pessoa foi atendida. Atendimentos = ofertadas − faltas sem aviso − cancelamentos + reocupadas.</p>
+  <p>Cada taxa usa o total de vagas ofertadas do próprio serviço e período. A coluna de simulação usa a semana fictícia da estratégia aplicada. O exemplo contém apenas contagens fictícias.</p></details>
+  <p id="city-error" role="alert"></p><p id="city-status" role="status"></p>
+  <div id="city-results" hidden>
+    <div class="city-filters"><label>Período importado<select id="city-period"></select></label><label>Serviço importado<select id="city-service"></select></label><button id="city-clear" class="ghost" type="button">Remover dados</button></div>
+    <p class="hint" id="city-context"></p>
+    <figure class="city-figure">
+      <figcaption><div><h3>Taxas por indicador</h3><p>Percentual das vagas ofertadas em cada agenda</p></div>
+        <button type="button" class="ghost" id="city-export">↓ Exportar comparação em CSV</button>
+      </figcaption>
+      <div class="legend"><span><i class="history-color"></i>Histórico importado</span><span><i class="plan"></i>Semana simulada</span></div>
+      <div id="city-chart"></div>
+    </figure>
+    <div class="table-wrap"><table><thead><tr><th>Indicador</th><th>Histórico importado</th><th>Semana simulada</th><th>Simulação − histórico</th></tr></thead><tbody id="city-rows"></tbody></table></div>
+    <p class="hint">De 80% para 84%, a diferença é de 4 pontos percentuais (p.p.). Aqui você compara a agenda importada com uma semana simulada.</p>
+  </div>
+</section>
+<section class="panel explore" id="semana"><div class="section-head"><div><div class="eyebrow">Detalhe das vagas</div><h2>Por dentro da semana</h2><p>Escolha um horário para acompanhar o que aconteceu nas duas agendas.</p></div><button class="ghost" id="export" type="button">↓ Baixar CSV da semana aplicada</button></div>
+<div class="filter-row"><div id="days" class="days" role="group" aria-label="Dia da semana"></div><label for="service" class="sr-only">Filtrar serviço</label><select id="service"><option value="all">Todos os serviços</option></select></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Horário</th><th scope="col">Serviço</th><th scope="col">Referência</th><th scope="col">Com estratégia</th><th scope="col"><span class="sr-only">Detalhes</span></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="pager"><span id="row-count"></span><div><button id="prev" type="button" aria-label="Página anterior">←</button><button id="next" type="button" aria-label="Próxima página">→</button></div></div></section>
+<section class="panel explore forecast-lab" id="previsao" aria-labelledby="forecast-title">
+  <div class="section-head"><div><div class="eyebrow">Previsão de faltas</div><h2 id="forecast-title">Voltar no tempo</h2><p>Escolha um serviço e uma semana. Veja duas previsões e depois revele quantas faltas sem aviso o histórico registrou.</p></div><a class="ghost" href="historico-semanal-ficticio.csv" download>↓ CSV semanal fictício</a></div>
+  <div class="city-filters forecast-filters"><label>Consulta ou exame<select id="forecast-service"></select></label><label>Semana da previsão<select id="forecast-week"></select></label><span id="forecast-context"></span></div>
+  <div class="forecast-layout"><div>
+    <div class="metrics" id="forecast-values"></div>
+    <div class="forecast-answer"><button class="ghost" type="button" id="forecast-reveal">Revelar resultado</button><div id="forecast-outcome" role="status"></div></div>
+  </div><aside class="forecast-history"><h3>As quatro semanas anteriores</h3><p>Exemplo: 7/20 significa 7 faltas em 20 vagas.</p><div id="forecast-history"></div><p id="forecast-baseline"></p></aside></div>
+  <figure class="city-figure forecast-series" id="forecast-series" hidden>
+    <figcaption><div><h3>Faltas ao longo das semanas</h3><p id="series-caption"></p></div><button id="series-export" type="button" class="ghost">↓ Exportar série em CSV</button></figcaption>
+    <section class="week-score" aria-labelledby="week-score-title">
+      <h4 id="week-score-title">Quem chegou mais perto?</h4>
+      <p id="score-context"></p>
+      <div id="score-buttons" role="group" aria-label="Destacar semanas por resultado">
+        <button type="button" data-result="model" aria-pressed="false"><strong>0</strong>Modelo mais perto</button>
+        <button type="button" data-result="average" aria-pressed="false"><strong>0</strong>Média mais perto</button>
+        <button type="button" data-result="tie" aria-pressed="false"><strong>0</strong>Empates</button>
+      </div>
+      <p class="hint">Clique em um total para destacar as semanas no gráfico. Erros iguais com uma casa decimal contam como empate.</p>
+      <div id="score-picker" hidden><label>Explorar semanas destacadas <select id="score-week"></select></label> <button type="button" class="ghost" id="score-reset">Limpar destaque</button></div>
+    </section>
+    <p class="series-guide" id="series-guide">Clique em uma semana para comparar os três valores. Use as setas ← e → para navegar ou clique na legenda para destacar uma linha.</p><div class="series-legend" id="series-legend" role="group" aria-label="Destacar uma linha do gráfico"></div>
+    <svg id="series-plot" tabindex="0" role="slider" aria-label="Semana em destaque" aria-describedby="series-guide" aria-valuemin="1"></svg>
+    <section class="week-insight" aria-live="polite" aria-atomic="true">
+      <h4 id="insight-title"></h4><dl id="insight-values"></dl><p id="insight-verdict"></p>
+      <button type="button" class="ghost" id="insight-reveal" hidden>Revelar faltas desta semana</button>
+    </section>
+    <p class="hint" id="series-note"></p>
+    <details><summary>Consultar valores por semana</summary><div class="table-wrap"><table><thead><tr><th>Início da semana</th><th>Modelo</th><th>Média de 4 semanas</th><th>Observadas</th></tr></thead><tbody id="series-values"></tbody></table></div></details>
+  </figure>
+  <details class="forecast-method"><summary>Como a previsão é feita?</summary><p id="forecast-scores"></p><p id="forecast-source"></p><p>O modelo (Ridge) aprende com semanas já encerradas. Ele considera as faltas anteriores, a época do ano, o serviço e as vagas agendadas. Uma previsão de 13,7 significa cerca de 14 faltas.</p><p>Para testar outro histórico, siga as instruções no README.</p></details>
+</section>
+<footer><span>AgendaSaúde Lab · Simulação municipal</span><button data-method type="button">Premissas e fonte ↗</button></footer>
+</main>
+<div id="announce" class="sr-only" role="status"></div>
+<dialog id="method"><button type="button" class="close" aria-label="Fechar">×</button><div class="eyebrow">Sobre o laboratório</div><h2>Como funciona</h2>
+<p>A prefeitura fictícia oferece 200 horários por semana em quatro serviços. Cada comparação usa as mesmas pessoas fictícias, os mesmos horários e a mesma fila nas duas agendas.</p>
+<h3>O que a simulação assume</h3><ul>
+<li>A referência mantém a agenda original. Algumas pessoas avisam espontaneamente que vão faltar.</li>
+<li>Na semana típica, a chance inicial de ausência varia de 22% a 31% por serviço. Transporte limitado acrescenta 12 pontos percentuais e reduz a chance de o contato ajudar a manter o compromisso.</li>
+<li>O lembrete automático é enviado antes do atendimento. O alcance digital é de 76% na semana típica e 36% no cenário de menor alcance. Entre quem recebe, 78% respondem. A ligação alcança 78% das tentativas.</li>
+<li>Em cada dia de agenda, a equipe trabalha por ordem de horário. Uma ligação usa 5 min. Uma oferta à fila usa 3 min. Ambas usam o mesmo limite diário. Lembretes digitais são automáticos.</li>
+<li>Uma vaga só volta à fila após cancelamento explícito. A simulação tenta uma oferta por vaga à próxima pessoa do mesmo serviço. A disponibilidade é de 78% para consultas e 58% para exames, representando também o preparo prévio.</li>
+<li>Quando há contato com uma pessoa que faltaria, há 40% de chance de ela conseguir manter o compromisso (18% no cenário de transporte limitado). Caso contrário, ela cancela antecipadamente. A falta sem aviso conserva a reserva até a hora do atendimento.</li></ul>
+<h3>O que os resultados medem</h3><p>Faltas evitadas contam quem manteve o próprio atendimento por causa do contato no modelo. Vagas reocupadas contam outra pessoa atendida no horário liberado. Atendimentos adicionais somam os dois grupos. Cancelamento e falta sem aviso aparecem separadamente.</p>
+<h3>Contexto municipal</h3><p>Passo Fundo registrou 5.849 ausências em 22.231 consultas multiprofissionais entre setembro e dezembro de 2025. Esse dado contextualiza o problema. As probabilidades e os resultados do laboratório são hipóteses ilustrativas, sem validação de impacto local. <a href="https://www.pmpf.rs.gov.br/2026/04/faltas-em-consultas-ultrapassam-25-e-ampliam-fila-de-espera-em-passo-fundo/" target="_blank" rel="noopener">Ler levantamento municipal ↗</a></p></dialog>
+<dialog id="detail"><button type="button" class="close" aria-label="Fechar">×</button><div id="detail-content"></div></dialog>
+<dialog id="alternatives" aria-label="Comparação de estratégias"><button type="button" class="close" aria-label="Fechar">×</button><div class="eyebrow">Experimento com a mesma agenda</div><h2>Comparar estratégias</h2><p id="compare-intro"></p><div id="compare-list"></div></dialog>
+<noscript>Ative o JavaScript para usar a simulação.</noscript>
+</body></html>
